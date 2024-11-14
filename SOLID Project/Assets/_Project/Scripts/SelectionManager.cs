@@ -4,10 +4,12 @@ using UnityEngine.SceneManagement;
 public class SelectionManager : MonoBehaviour
 {
     [SerializeField] private string selectableTag = "Selectable";
-    [SerializeField] private Material highlightMaterial;
-    [SerializeField] private Material defaultMaterial;
+
+    private HighlightSelectionRespones _selectionRespones;
 
     private Transform _selection;
+
+
 
     private void Awake()
     {
@@ -19,11 +21,7 @@ public class SelectionManager : MonoBehaviour
     {
         if (_selection != null)
         {
-            var selectionRenderer = _selection.GetComponent<Renderer>();
-            if (selectionRenderer != null)
-            {
-                selectionRenderer.material = defaultMaterial;
-            }
+            _selectionRespones.OnDeselect(_selection);
         }
 
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -40,11 +38,31 @@ public class SelectionManager : MonoBehaviour
 
         if (_selection != null)
         {
-            var selectionRenderer = _selection.GetComponent<Renderer>();
-            if (selectionRenderer != null)
-            {
-                selectionRenderer.material = highlightMaterial;
-            }
+            _selectionRespones.OnSelect(_selection);
+        }
+    }
+}
+
+internal class HighlightSelectionRespones : MonoBehaviour
+{
+    [SerializeField] public Material highlightMaterial;
+    [SerializeField] public Material defaultMaterial;
+
+    public void OnSelect(Transform selection)
+    {
+        var selectionRenderer = selection.GetComponent<Renderer>();
+        if (selectionRenderer != null)
+        {
+            selectionRenderer.material = this.highlightMaterial;
+        }
+    }
+
+    public void OnDeselect(Transform selection)
+    {
+        var selectionRenderer = selection.GetComponent<Renderer>();
+        if (selectionRenderer != null)
+        {
+            selectionRenderer.material = this.defaultMaterial;
         }
     }
 }
